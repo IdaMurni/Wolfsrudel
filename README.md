@@ -1,5 +1,10 @@
 # PoW
 Pow Implementation <br/>
+run Blockchain: <br/>
+target dir blockchain_server http://0.0.0.0:5000
+````
+go run *go
+````
 available BlockchainServer API<br>
 ````
 func (bcs *BlockchainServer) Run() {
@@ -12,6 +17,12 @@ func (bcs *BlockchainServer) Run() {
 }
 ````
 <br/>
+
+run Wallet: <br/>
+target dir wallet_server  http://0.0.0.0:8080
+````
+go run *go
+````
 
 available wallet API: <br/>
 ````
