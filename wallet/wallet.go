@@ -20,14 +20,14 @@ type Wallet struct {
 
 func NewWallet() *Wallet {
 	// 1. Creating ECDSA private key (32 bytes) public key (64 bytes)
-	w := new(Wallet)
+	wallet := new(Wallet)
 	privateKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	w.privateKey = privateKey
-	w.publicKey = &w.privateKey.PublicKey
+	wallet.privateKey = privateKey
+	wallet.publicKey = &wallet.privateKey.PublicKey
 	// 2. Perform SHA-256 hashing on the public key (32 bytes).
 	h2 := sha256.New()
-	h2.Write(w.publicKey.X.Bytes())
-	h2.Write(w.publicKey.Y.Bytes())
+	h2.Write(wallet.publicKey.X.Bytes())
+	h2.Write(wallet.publicKey.Y.Bytes())
 	digest2 := h2.Sum(nil)
 	// 3. Perform RIPEMD-160 hashing on the result of SHA-256 (20 bytes).
 	h3 := ripemd160.New()
@@ -53,39 +53,39 @@ func NewWallet() *Wallet {
 	copy(dc8[21:], chsum[:])
 	// 9. Convert the result from a byte string into base58.
 	address := base58.Encode(dc8)
-	w.blockchainAddress = address
-	return w
+	wallet.blockchainAddress = address
+	return wallet
 }
 
-func (w *Wallet) PrivateKey() *ecdsa.PrivateKey {
-	return w.privateKey
+func (wallet *Wallet) PrivateKey() *ecdsa.PrivateKey {
+	return wallet.privateKey
 }
 
-func (w *Wallet) PrivateKeyStr() string {
-	return fmt.Sprintf("%x", w.privateKey.D.Bytes())
+func (wallet *Wallet) PrivateKeyStr() string {
+	return fmt.Sprintf("%x", wallet.privateKey.D.Bytes())
 }
 
-func (w *Wallet) PublicKey() *ecdsa.PublicKey {
-	return w.publicKey
+func (wallet *Wallet) PublicKey() *ecdsa.PublicKey {
+	return wallet.publicKey
 }
 
-func (w *Wallet) PublicKeyStr() string {
-	return fmt.Sprintf("%064x%064x", w.publicKey.X.Bytes(), w.publicKey.Y.Bytes())
+func (wallet *Wallet) PublicKeyStr() string {
+	return fmt.Sprintf("%064x%064x", wallet.publicKey.X.Bytes(), wallet.publicKey.Y.Bytes())
 }
 
-func (w *Wallet) BlockchainAddress() string {
-	return w.blockchainAddress
+func (wallet *Wallet) BlockchainAddress() string {
+	return wallet.blockchainAddress
 }
 
-func (w *Wallet) MarshalJSON() ([]byte, error) {
+func (wallet *Wallet) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		PrivateKey        string `json:"private_key"`
 		PublicKey         string `json:"public_key"`
 		BlockchainAddress string `json:"blockchain_address"`
 	}{
-		PrivateKey:        w.PrivateKeyStr(),
-		PublicKey:         w.PublicKeyStr(),
-		BlockchainAddress: w.BlockchainAddress(),
+		PrivateKey:        wallet.PrivateKeyStr(),
+		PublicKey:         wallet.PublicKeyStr(),
+		BlockchainAddress: wallet.BlockchainAddress(),
 	})
 }
 
@@ -102,22 +102,22 @@ func NewTransaction(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey,
 	return &Transaction{privateKey, publicKey, sender, recipient, value}
 }
 
-func (t *Transaction) GenerateSignature() *utils.Signature {
+func (transaction *Transaction) GenerateSignature() *utils.Signature {
 	m, _ := json.Marshal(t)
 	h := sha256.Sum256([]byte(m))
-	r, s, _ := ecdsa.Sign(rand.Reader, t.senderPrivateKey, h[:])
-	return &utils.Signature{r, s}
+	r, s, _ := ecdsa.Sign(rand.Reader, transaction.senderPrivateKey, h[:])
+	return &utils.Signature{R: r, S: s}
 }
 
-func (t *Transaction) MarshalJSON() ([]byte, error) {
+func (transaction *Transaction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Sender    string  `json:"sender_blockchain_address"`
 		Recipient string  `json:"recipient_blockchain_address"`
 		Value     float32 `json:"value"`
 	}{
-		Sender:    t.senderBlockchainAddress,
-		Recipient: t.recipientBlockchainAddress,
-		Value:     t.value,
+		Sender:    transaction.senderBlockchainAddress,
+		Recipient: transaction.recipientBlockchainAddress,
+		Value:     transaction.value,
 	})
 }
 
@@ -129,12 +129,12 @@ type TransactionRequest struct {
 	Value                      *string `json:"value"`
 }
 
-func (tr *TransactionRequest) Validate() bool {
-	if tr.SenderPrivateKey == nil ||
-		tr.SenderBlockchainAddress == nil ||
-		tr.RecipientBlockchainAddress == nil ||
-		tr.SenderPublicKey == nil ||
-		tr.Value == nil {
+func (transactionRequest *TransactionRequest) Validate() bool {
+	if transactionRequest.SenderPrivateKey == nil ||
+		transactionRequest.SenderBlockchainAddress == nil ||
+		transactionRequest.RecipientBlockchainAddress == nil ||
+		transactionRequest.SenderPublicKey == nil ||
+		transactionRequest.Value == nil {
 		return false
 	}
 	return true

@@ -12,6 +12,7 @@ func (bcs *BlockchainServer) Run() {
 }
 ````
 <br/>
+
 available wallet API: <br/>
 ````
 func (waletServer *WalletServer) Run() {
