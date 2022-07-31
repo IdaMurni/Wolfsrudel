@@ -13,7 +13,7 @@ func (bcs *BlockchainServer) Run() {
 ````
 <br/>
 available wallet API: <br/>
-´´´
+```
 func (waletServer *WalletServer) Run() {
 	http.HandleFunc("/", waletServer.Index)
 	http.HandleFunc("/wallet", waletServer.Wallet)
@@ -21,6 +21,6 @@ func (waletServer *WalletServer) Run() {
 	http.HandleFunc("/transaction", waletServer.CreateTransaction)
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(waletServer.Port())), nil))
 }
-´´´
+```
 
 
