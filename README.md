@@ -1,5 +1,5 @@
 # PoW
-Pow Implementation <br/>
+Pow Implementation of IdaMurni Blockchain<br/>
 run Blockchain: <br/>
 target dir blockchain_server http://0.0.0.0:5000
 ````
@@ -8,11 +8,13 @@ go run *go
 available BlockchainServer API<br>
 ````
 func (bcs *BlockchainServer) Run() {
+	bcs.GetBlockchain().Run()
 	http.HandleFunc("/", bcs.GetChain)
 	http.HandleFunc("/transactions", bcs.Transactions)
 	http.HandleFunc("/mine", bcs.Mine)
 	http.HandleFunc("/mine/start", bcs.StartMine)
 	http.HandleFunc("/amount", bcs.Amount)
+	http.HandleFunc("/consensus", bcs.Consensus)
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(bcs.Port())), nil))
 }
 ````
@@ -26,12 +28,12 @@ go run *go
 
 available wallet API: <br/>
 ````
-func (waletServer *WalletServer) Run() {
-	http.HandleFunc("/", waletServer.Index)
-	http.HandleFunc("/wallet", waletServer.Wallet)
-	http.HandleFunc("/wallet/amount", waletServer.WalletAmount)
-	http.HandleFunc("/transaction", waletServer.CreateTransaction)
-	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(waletServer.Port())), nil))
+func (ws *WalletServer) Run() {
+	http.HandleFunc("/", ws.Index)
+	http.HandleFunc("/wallet", ws.Wallet)
+	http.HandleFunc("/wallet/amount", ws.WalletAmount)
+	http.HandleFunc("/transaction", ws.CreateTransaction)
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(ws.Port())), nil))
 }
 ````
 

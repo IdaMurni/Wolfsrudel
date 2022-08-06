@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/btcsuite/btcd/btcutil/base58"
 	"../utils"
-	"golang.org/x/crypto/ripemd160"
+	//"golang.org/x/crypto/ripemd160"
 )
 
 type Wallet struct {
@@ -30,7 +30,7 @@ func NewWallet() *Wallet {
 	h2.Write(w.publicKey.Y.Bytes())
 	digest2 := h2.Sum(nil)
 	// 3. Perform RIPEMD-160 hashing on the result of SHA-256 (20 bytes).
-	h3 := ripemd160.New()
+	h3 := sha256.New() //ripemd160.New()
 	h3.Write(digest2)
 	digest3 := h3.Sum(nil)
 	// 4. Add version byte in front of RIPEMD-160 hash (0x00 for Main Network).
@@ -106,7 +106,7 @@ func (t *Transaction) GenerateSignature() *utils.Signature {
 	m, _ := json.Marshal(t)
 	h := sha256.Sum256([]byte(m))
 	r, s, _ := ecdsa.Sign(rand.Reader, t.senderPrivateKey, h[:])
-	return &utils.Signature{r, s}
+	return &utils.Signature{R: r, S: s}
 }
 
 func (t *Transaction) MarshalJSON() ([]byte, error) {
