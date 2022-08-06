@@ -26,25 +26,25 @@ func NewWalletServer(port uint16, gateway string) *WalletServer {
 	return &WalletServer{port, gateway}
 }
 
-func (walletServer *WalletServer) Port() uint16 {
-	return walletServer.port
+func (ws *WalletServer) Port() uint16 {
+	return ws.port
 }
 
-func (walletServer *WalletServer) Gateway() string {
-	return walletServer.gateway
+func (ws *WalletServer) Gateway() string {
+	return ws.gateway
 }
 
-func (walletServer *WalletServer) Index(w http.ResponseWriter, req *http.Request) {
+func (ws *WalletServer) Index(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodGet:
-		t, _ := template.ParseFiles(path.Join(tempDir, "index.html")) // TODO: should use modern frontend e.g React or Angular or static Page Astro? 
+		t, _ := template.ParseFiles(path.Join(tempDir, "index.html"))
 		t.Execute(w, "")
 	default:
 		log.Printf("ERROR: Invalid HTTP Method")
 	}
 }
 
-func (walletServer *WalletServer) Wallet(w http.ResponseWriter, req *http.Request) {
+func (ws *WalletServer) Wallet(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodPost:
 		w.Header().Add("Content-Type", "application/json")
@@ -57,7 +57,7 @@ func (walletServer *WalletServer) Wallet(w http.ResponseWriter, req *http.Reques
 	}
 }
 
-func (walletServer *WalletServer) CreateTransaction(w http.ResponseWriter, req *http.Request) {
+func (ws *WalletServer) CreateTransaction(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodPost:
 		decoder := json.NewDecoder(req.Body)
@@ -100,7 +100,7 @@ func (walletServer *WalletServer) CreateTransaction(w http.ResponseWriter, req *
 		m, _ := json.Marshal(bt)
 		buf := bytes.NewBuffer(m)
 
-		resp, _ := http.Post(walletServer.Gateway()+"/transactions", "application/json", buf)
+		resp, _ := http.Post(ws.Gateway()+"/transactions", "application/json", buf)
 		if resp.StatusCode == 201 {
 			io.WriteString(w, string(utils.JsonStatus("success")))
 			return
@@ -112,11 +112,11 @@ func (walletServer *WalletServer) CreateTransaction(w http.ResponseWriter, req *
 	}
 }
 
-func (walletServer *WalletServer) WalletAmount(w http.ResponseWriter, req *http.Request) {
+func (ws *WalletServer) WalletAmount(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodGet:
 		blockchainAddress := req.URL.Query().Get("blockchain_address")
-		endpoint := fmt.Sprintf("%s/amount", walletServer.Gateway())
+		endpoint := fmt.Sprintf("%s/amount", ws.Gateway())
 
 		client := &http.Client{}
 		bcsReq, _ := http.NewRequest("GET", endpoint, nil)
@@ -159,10 +159,10 @@ func (walletServer *WalletServer) WalletAmount(w http.ResponseWriter, req *http.
 	}
 }
 
-func (walletServer *WalletServer) Run() {
-	http.HandleFunc("/", walletServer.Index)
-	http.HandleFunc("/wallet", walletServer.Wallet)
-	http.HandleFunc("/wallet/amount", walletServer.WalletAmount)
-	http.HandleFunc("/transaction", walletServer.CreateTransaction)
-	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(walletServer.Port())), nil))
+func (ws *WalletServer) Run() {
+	http.HandleFunc("/", ws.Index)
+	http.HandleFunc("/wallet", ws.Wallet)
+	http.HandleFunc("/wallet/amount", ws.WalletAmount)
+	http.HandleFunc("/transaction", ws.CreateTransaction)
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(int(ws.Port())), nil))
 }
