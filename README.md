@@ -1,4 +1,4 @@
-# PoW
+# Wolfsrudel
 Wolfsrudel Proof of Work Implementation of IdaMurni Blockchain<br/>
 run Blockchain: <br/>
 target dir blockchain_server http://0.0.0.0:5000
