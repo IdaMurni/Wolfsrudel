@@ -12,7 +12,7 @@ little todo for this: <br />
 <ul>
     <li>create a dynamic miners</li>
     <li>share mining rewards to the miners</li>
-    <li>defined Max total suplly</li>
+    <li>defined Max total supply</li>
 </ul>
 then check the transactions on chains http://0.0.0.0:5000 <br />
 refresh the page!
